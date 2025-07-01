@@ -1,26 +1,26 @@
 {
   "name": "shadcn-calendar",
   "version": "1.0.0",
-  "description": "Shadcn/UI Calendar component for Weweb",
-  "main": "src/Calendar.vue",
+  "description": "Shadcn/UI calendar component for Weweb",
+  "main": "src/calendar.vue",
+  "weweb": {
+    "componentPath": "./src/calendar.vue"
+  },
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build"
+    "serve": "webpack serve --mode development",
+    "build": "webpack --mode production"
   },
   "keywords": [
     "weweb",
     "shadcn",
     "ui",
-    "Calendar",
+    "calendar",
     "vue",
     "component"
   ],
-  "author": "Shadcn/UI for Weweb Community",
+  "author": "Shadcn/UI for Weweb",
   "license": "MIT",
   "dependencies": {
     "vue": "^3.3.4"
-  },
-  "devDependencies": {
-    "@vue/cli-service": "^5.0.8"
   }
 }
