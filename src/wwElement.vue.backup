@@ -2,9 +2,9 @@
   <div
     :class="cn(
       'p-3 border rounded-md bg-background',
-      customClass
+      content.customClass
     )"
-    :style="customStyle"
+    :style="content.customStyle"
   >
     <!-- Calendar header -->
     <div class="flex items-center justify-between space-x-1 mb-4">
@@ -92,9 +92,9 @@
           // Disabled dates
           isDateDisabled(date) ? 'opacity-50 cursor-not-allowed' : '',
           // Range selection
-          mode === 'range' && isInRange(date) && !isDateSelected(date) ? 'bg-accent/50' : '',
+          content.mode === 'range' && isInRange(date) && !isDateSelected(date) ? 'bg-accent/50' : '',
           // Range start/end
-          mode === 'range' && (isRangeStart(date) || isRangeEnd(date)) ? 'bg-primary text-primary-foreground' : ''
+          content.mode === 'range' && (isRangeStart(date) || isRangeEnd(date)) ? 'bg-primary text-primary-foreground' : ''
         )"
       >
         {{ date.day }}
@@ -107,11 +107,11 @@
     </div>
 
     <!-- Selected date info -->
-    <div v-if="selectedDates.length > 0 && showSelectedInfo !== false" class="mt-4 pt-4 border-t text-sm">
-      <div v-if="mode === 'single' && selectedDates[0]">
+    <div v-if="selectedDates.length > 0 && content.showSelectedInfo !== false" class="mt-4 pt-4 border-t text-sm">
+      <div v-if="content.mode === 'single' && selectedDates[0]">
         <strong>Selected:</strong> {{ formatDate(selectedDates[0]) }}
       </div>
-      <div v-else-if="mode === 'multiple'">
+      <div v-else-if="content.mode === 'multiple'">
         <strong>Selected ({{ selectedDates.length }}):</strong>
         <div class="mt-1 flex flex-wrap gap-1">
           <span
@@ -126,15 +126,15 @@
           </span>
         </div>
       </div>
-      <div v-else-if="mode === 'range' && selectedDates.length === 2">
+      <div v-else-if="content.mode === 'range' && selectedDates.length === 2">
         <strong>Range:</strong> {{ formatDate(selectedDates[0]) }} - {{ formatDate(selectedDates[1]) }}
       </div>
     </div>
 
     <!-- Footer actions -->
-    <div v-if="showFooter !== false" class="mt-4 pt-4 border-t flex justify-between">
+    <div v-if="content.showFooter !== false" class="mt-4 pt-4 border-t flex justify-between">
       <button
-        v-if="showClear !== false"
+        v-if="content.showClear !== false"
         @click="clearSelection"
         :class="cn(
           'inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 px-3'
@@ -144,7 +144,7 @@
       </button>
       
       <button
-        v-if="showToday !== false"
+        v-if="content.showToday !== false"
         @click="goToToday"
         :class="cn(
           'inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 px-3'
@@ -244,17 +244,17 @@ export default {
     }
 
     const isDateDisabled = (date) => {
-      if (props.disabledDates) {
-        return props.disabledDates.some(disabled => 
+      if (props.content.disabledDates) {
+        return props.content.disabledDates.some(disabled => 
           new Date(disabled).toDateString() === date.date.toDateString()
         )
       }
       
-      if (props.minDate && date.date < new Date(props.minDate)) {
+      if (props.content.minDate && date.date < new Date(props.content.minDate)) {
         return true
       }
       
-      if (props.maxDate && date.date > new Date(props.maxDate)) {
+      if (props.content.maxDate && date.date > new Date(props.content.maxDate)) {
         return true
       }
       
@@ -262,7 +262,7 @@ export default {
     }
 
     const isInRange = (date) => {
-      if (props.mode !== 'range' || selectedDates.value.length !== 2) {
+      if (props.content.mode !== 'range' || selectedDates.value.length !== 2) {
         return false
       }
       
@@ -271,7 +271,7 @@ export default {
     }
 
     const isRangeStart = (date) => {
-      if (props.mode !== 'range' || selectedDates.value.length === 0) {
+      if (props.content.mode !== 'range' || selectedDates.value.length === 0) {
         return false
       }
       
@@ -280,7 +280,7 @@ export default {
     }
 
     const isRangeEnd = (date) => {
-      if (props.mode !== 'range' || selectedDates.value.length < 2) {
+      if (props.content.mode !== 'range' || selectedDates.value.length < 2) {
         return false
       }
       
@@ -289,9 +289,9 @@ export default {
     }
 
     const hasEvents = (date) => {
-      if (!props.events) return false
+      if (!props.content.events) return false
       
-      return props.events.some(event => 
+      return props.content.events.some(event => 
         new Date(event.date).toDateString() === date.date.toDateString()
       )
     }
@@ -301,7 +301,7 @@ export default {
 
       const newDate = new Date(date.date)
       
-      if (props.mode === 'multiple') {
+      if (props.content.mode === 'multiple') {
         const index = selectedDates.value.findIndex(selected => 
           selected.toDateString() === newDate.toDateString()
         )
@@ -313,7 +313,7 @@ export default {
         }
         
         emit('update:modelValue', [...selectedDates.value])
-      } else if (props.mode === 'range') {
+      } else if (props.content.mode === 'range') {
         if (selectedDates.value.length === 0) {
           selectedDates.value = [newDate]
         } else if (selectedDates.value.length === 1) {
@@ -332,7 +332,7 @@ export default {
       emit('select', {
         date: newDate,
         selectedDates: [...selectedDates.value],
-        mode: props.mode || 'single'
+        mode: props.content.mode || 'single'
       })
     }
 
@@ -364,11 +364,11 @@ export default {
 
     const clearSelection = () => {
       selectedDates.value = []
-      emit('update:modelValue', props.mode === 'multiple' ? [] : null)
+      emit('update:modelValue', props.content.mode === 'multiple' ? [] : null)
       emit('select', {
         date: null,
         selectedDates: [],
-        mode: props.mode || 'single'
+        mode: props.content.mode || 'single'
       })
     }
 
